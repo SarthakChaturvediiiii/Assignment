@@ -32,7 +32,7 @@ public class Movement : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, angle, 0);
         }
         animator.SetFloat("speed", moveDirection.magnitude);
-        Debug.Log(moveDirection.magnitude);
+        //Debug.Log(moveDirection.magnitude);
 
         if (Input.GetKeyDown(KeyCode.Space))
         {

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SocialPlatforms.Impl;
+using UnityEngine.UIElements;
 
 public class GameManger : MonoBehaviour
 {
@@ -11,7 +12,16 @@ public class GameManger : MonoBehaviour
     public TextMeshProUGUI timerText;
     public int score = 0; 
     public TextMeshProUGUI scoreText;
+    public GameObject Player;
+    public Vector3 newPosition = new Vector3(1, 0.2f, 1);
+    public GameObject[] points;
+    GameObject[] allObjects;
 
+    private void Start()
+    {
+        PlayerPrefs.SetInt("Score", 0);
+        allObjects = GameObject.FindObjectsOfType<GameObject>();
+    }
     void Update()
     {
         if (timeRemaining > 0)
@@ -23,7 +33,7 @@ public class GameManger : MonoBehaviour
         {
             TimeIsUp();
         }
-        Debug.LogWarning(score);
+       // Debug.LogWarning(score);
         UpdateScoreDisplay();
     }
 
@@ -36,6 +46,7 @@ public class GameManger : MonoBehaviour
 
     void TimeIsUp()
     {
+        gameOver();
         Debug.Log("Time is up!");
         
     }
@@ -51,10 +62,30 @@ public class GameManger : MonoBehaviour
             
             UpdateScoreDisplay();
         }
+
+        if (collision.gameObject.name.Contains("Border"))
+        {
+            gameOver();
+        }
     }
 
     void UpdateScoreDisplay()
     {
         scoreText.text = "Score: " + PlayerPrefs.GetInt("Score").ToString(); 
+    }
+    public void gameOver()
+    {
+        score = 0;
+        PlayerPrefs.SetInt("Score", 0);
+        Player.transform.position = newPosition;
+        UpdateScoreDisplay();
+        timeRemaining = 60f;
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj.name == "Point")
+            {
+                obj.SetActive(true);
+            }
+        }
     }
 }
