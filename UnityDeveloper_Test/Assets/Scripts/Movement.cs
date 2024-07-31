@@ -8,12 +8,14 @@ public class Movement : MonoBehaviour
     public float speed = 5.0f;
     private Animator animator;
     public float rotationSpeed = 720f;
-    //private Rigidbody rb;
+    public float jumpForce = 5.0f; 
+    private Rigidbody rb;
+    
 
     void Start()
     {
         animator = GetComponent<Animator>();
-        
+        rb = GetComponent<Rigidbody>();
     }
     void Update()
     {
@@ -31,5 +33,27 @@ public class Movement : MonoBehaviour
         }
         animator.SetFloat("speed", moveDirection.magnitude);
         Debug.Log(moveDirection.magnitude);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Jump();
+        }
+    }
+
+    void Jump()
+    {
+        // Check if the character is on the ground before allowing a jump
+        if (IsGrounded())
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+    }
+
+    bool IsGrounded()
+    {
+        // Raycast to the ground to check if the character is grounded
+        // Adjust the distance value according to your character's height
+        float distanceToGround = 1.0f;
+        return Physics.Raycast(transform.position, Vector3.down, distanceToGround + 0.1f);
     }
 }
