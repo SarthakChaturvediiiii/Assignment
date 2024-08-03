@@ -1,26 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
-using UnityEngine.SocialPlatforms.Impl;
-using UnityEngine.UIElements;
-
+using UnityEngine.EventSystems;
 public class GameManger : MonoBehaviour
 {
     public float timeRemaining = 60f; 
     public TextMeshProUGUI timerText;
+
     public int score = 0; 
     public TextMeshProUGUI scoreText;
+
     public GameObject Player;
     public Vector3 newPosition = new Vector3(1, 0.2f, 1);
+
     public GameObject[] points;
-    GameObject[] allObjects;
+    private GameObject[] allObjects;
+
+    
+
+    public GameObject auraPrefab;
+    public Transform characterTransform;
+    private GameObject currentAuraInstance;
+    private Movement movementScript;
 
     private void Start()
     {
         PlayerPrefs.SetInt("Score", 0);
         allObjects = GameObject.FindObjectsOfType<GameObject>();
+        
+        if (Player != null)
+        {
+            movementScript = Player.GetComponent<Movement>();
+        }
     }
     void Update()
     {
@@ -33,8 +43,27 @@ public class GameManger : MonoBehaviour
         {
             TimeIsUp();
         }
-       // Debug.LogWarning(score);
+        if (Input.GetMouseButtonDown(0))
+        {
+            auraPrefab.SetActive(true);
+
+            auraPrefab.transform.position = Player.transform.position;
+            auraPrefab.transform.rotation = Quaternion.Euler(0, Player.transform.rotation.eulerAngles.y, 0);
+            if (movementScript != null)
+            {
+                movementScript.enabled = false;
+            }
+        }
+         if (Input.GetKeyDown(KeyCode.Return))
+        {            
+                auraPrefab.SetActive(false);
+                
+                movementScript.enabled = true;   
+        }
+       //SSSS animator.SetFloat("speed", Movement.Instance.moveDirection.magnitude);
+        Debug.Log(Movement.Instance.moveDirection.magnitude);
         UpdateScoreDisplay();
+
     }
 
     void UpdateTimerDisplay()
@@ -87,5 +116,6 @@ public class GameManger : MonoBehaviour
                 obj.SetActive(true);
             }
         }
+        auraPrefab.SetActive(false);
     }
 }

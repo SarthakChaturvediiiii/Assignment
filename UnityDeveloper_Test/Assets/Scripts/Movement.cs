@@ -1,27 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Searcher.SearcherWindow.Alignment;
-
 public class Movement : MonoBehaviour
 {
     public float speed = 5.0f;
     private Animator animator;
     public float rotationSpeed = 720f;
     public float jumpForce = 5.0f; 
-    private Rigidbody rb;
-    
+    public Rigidbody rb;
+    [HideInInspector]
+    public Vector3 moveDirection;
 
+    public static Movement Instance { get; private set; }
+
+    
+    private void Awake()
+    {
+    
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+        }
+
+    }
     void Start()
     {
-        animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
     }
     void Update()
     {
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
-        Vector3 moveDirection = new Vector3(horizontal, 0.0f, vertical).normalized;
+        moveDirection = new Vector3(horizontal, 0.0f, vertical).normalized;
 
         if (moveDirection.magnitude >= 0.1f)
         {
@@ -32,8 +41,6 @@ public class Movement : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, angle, 0);
         }
         animator.SetFloat("speed", moveDirection.magnitude);
-        //Debug.Log(moveDirection.magnitude);
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Jump();
@@ -42,7 +49,6 @@ public class Movement : MonoBehaviour
 
     void Jump()
     {
-        // Check if the character is on the ground before allowing a jump
         if (IsGrounded())
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
@@ -51,8 +57,6 @@ public class Movement : MonoBehaviour
 
     bool IsGrounded()
     {
-        // Raycast to the ground to check if the character is grounded
-        // Adjust the distance value according to your character's height
         float distanceToGround = 1.0f;
         return Physics.Raycast(transform.position, Vector3.down, distanceToGround + 0.1f);
     }
